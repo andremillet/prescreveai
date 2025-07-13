@@ -41,7 +41,7 @@ def parse_medication_string(input_string):
         # Dosage: number + unit (e.g., 500MG, 0.5ML)
         # Comment: optional, enclosed in []
         # Posology: remaining part of the string
-        match = re.match(r"^(.*?)\s+(\d+\.?\d*(?:MG|ML|G|MCG|UI|MG/ML|GOTAS|COMPRIMIDOS|CÁPSULAS|%))\s*(?:\[(.*?)\])?\s*(.*)$", item, re.IGNORECASE)
+        match = re.match(r"^(.*?)\s+(\d+\.?\d*(?:MG|ML|G|MCG|UI|MG/ML|GOTAS|COMPRIMIDOS|CÁPSULAS|%))\s*(?:\\[(.*?)\\])?\s*(.*)$", item, re.IGNORECASE)
 
         if match:
             name = match.group(1).strip().upper()
@@ -51,13 +51,6 @@ def parse_medication_string(input_string):
 
             if comment:
                 comment = comment.strip().upper()
-
-            # DEBUG PRINTS - REMOVE IN PRODUCTION
-            print(f"DEBUG: item='{item}'")
-            print(f"DEBUG: group(1) Name='{name}'")
-            print(f"DEBUG: group(2) Dosage='{dosage}'")
-            print(f"DEBUG: group(3) Comment='{comment}'")
-            print(f"DEBUG: group(4) Posology='{posology}'")
 
             # Basic validation
             if not name:
@@ -276,7 +269,6 @@ def start_server():
     print(f"Iniciando servidor FastAPI com: {' '.join(command)}")
     try:
         process = subprocess.Popen(command, env=env, preexec_fn=os.setsid) # Use setsid to create a new process group
-        print(f"DEBUG: Popen returned PID: {process.pid}") # Debug print
         
         with open(PID_FILE, "w") as f:
             f.write(str(process.pid))
@@ -393,6 +385,61 @@ def run_cli():
             print(json.dumps(result, indent=2, ensure_ascii=False))
             print("--------------------\n")
 
+# --- Install Instructions ---
+def show_install_instructions():
+    print("\nBem-vindo ao PrescreveAI!")
+    print("Para instalar o PrescreveAI e tê-lo disponível globalmente, execute o seguinte comando:")
+    print("\ncurl -fsSL https://andremillet.github.io/prescreveai/install.sh | bash\n")
+    print("Após a instalação, você poderá usar os comandos 'prescreveai' e 'prescreveai serve'.")
+
+# --- Update Function ---
+def update_program():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    install_dir = os.path.abspath(os.path.join(script_dir, "..")) # Assuming installed in /opt/prescreveai
+
+    print("\nIniciando atualização do PrescreveAI...")
+
+    # 1. Navegar para o diretório de instalação
+    if not os.path.exists(install_dir) or not os.path.isdir(install_dir):
+        print(f"Erro: Diretório de instalação não encontrado em {install_dir}. Certifique-se de que o PrescreveAI foi instalado corretamente.")
+        sys.exit(1)
+    
+    os.chdir(install_dir)
+
+    # 2. Fazer git pull
+    print("Puxando as últimas alterações do repositório...")
+    try:
+        subprocess.run(["git", "pull"], check=True, capture_output=True, text=True)
+        print("Alterações puxadas com sucesso.")
+    except subprocess.CalledProcessError as e:
+        print(f"Erro ao puxar alterações do Git: {e.stderr}")
+        sys.exit(1)
+
+    # 3. Ativar o ambiente virtual e instalar dependências
+    print("Atualizando dependências do ambiente virtual...")
+    venv_activate_script = os.path.join(install_dir, ".venv", "bin", "activate")
+    requirements_file = os.path.join(install_dir, "requirements.txt")
+
+    if not os.path.exists(venv_activate_script):
+        print(f"Erro: Ambiente virtual não encontrado em {venv_activate_script}. Recrie o ambiente virtual ou reinstale o PrescreveAI.")
+        sys.exit(1)
+    
+    if not os.path.exists(requirements_file):
+        print(f"Erro: requirements.txt não encontrado em {requirements_file}. Não foi possível atualizar as dependências.")
+        sys.exit(1)
+
+    # Execute pip install dentro do ambiente virtual
+    try:
+        # Use o interpretador python do venv diretamente
+        venv_python = os.path.join(install_dir, ".venv", "bin", "python3")
+        subprocess.run([venv_python, "-m", "pip", "install", "-r", requirements_file], check=True, capture_output=True, text=True)
+        print("Dependências atualizadas com sucesso.")
+    except subprocess.CalledProcessError as e:
+        print(f"Erro ao atualizar dependências: {e.stderr}")
+        sys.exit(1)
+
+    print("\nPrescreveAI atualizado com sucesso para a versão mais recente!")
+
 # --- Main entry point for the script --- 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
@@ -403,6 +450,10 @@ if __name__ == "__main__":
             stop_server()
         elif command == "status":
             server_status()
+        elif command == "install":
+            show_install_instructions()
+        elif command == "update":
+            update_program()
         else:
             # Run the interactive CLI for other commands or no command
             run_cli()

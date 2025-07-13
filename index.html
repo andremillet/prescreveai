@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrescreveAI - Seu Assistente de Prescrições Médicas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #0056b3;
+        }
+        pre {
+            background-color: #eee;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: "Courier New", Courier, monospace;
+        }
+        .button {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bem-vindo ao PrescreveAI!</h1>
+        <p>O PrescreveAI é uma ferramenta de linha de comando e API para auxiliar na geração de prescrições médicas, permitindo a criação de documentos em PDF e a integração com outros sistemas.</p>
+
+        <h2>Como Instalar</h2>
+        <p>Para instalar o PrescreveAI em seu sistema e tê-lo disponível globalmente, abra seu terminal e execute o seguinte comando:</p>
+        <pre><code>curl -fsSL https://andremillet.github.io/prescreveai/install.sh | bash</code></pre>
+        <p>Este comando irá baixar e executar o script de instalação, que configurará o ambiente necessário e criará o comando <code>prescreveai</code> em seu sistema.</p>
+
+        <h2>Após a Instalação</h2>
+        <p>Você poderá usar o comando <code>prescreveai</code> para interagir com a ferramenta:</p>
+        <ul>
+            <li>Para usar a interface de linha de comando interativa:</li>
+            <pre><code>prescreveai</code></pre>
+            <li>Para iniciar o servidor da API (para integração com outros programas):</li>
+            <pre><code>prescreveai serve</code></pre>
+        </ul>
+
+        <p>Para mais detalhes e documentação, visite o <a href="https://github.com/andremillet/prescreveai">repositório no GitHub</a>.</p>
+    </div>
+</body>
+</html>
