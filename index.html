@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PrescreveAI - Seu Assistente de Prescrições Médicas</title>
+    <!-- CDN para Font Awesome (ícones) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -24,36 +26,54 @@
         h1, h2 {
             color: #0056b3;
         }
-        .install-code-container {
-            position: relative;
+        /* Estilos para o container de cópia */
+        .copy-container {
+            display: flex;
+            align-items: center;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        #installCommandInput {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-family: monospace;
+            font-size: 14px;
+            padding: 8px;
+            outline: none;
+        }
+
+        #copyButton {
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Espaço entre ícone e texto */
+        }
+
+        #copyButton:hover {
+            background-color: #e0e0e0;
+        }
+
+        #copyButton i {
+            color: #333;
+        }
+
+        /* Estilos gerais */
+        pre {
             background-color: #eee;
             padding: 15px;
             border-radius: 5px;
             overflow-x: auto;
-            margin-bottom: 10px;
-        }
-        .install-code-container code {
-            display: block;
-            white-space: pre-wrap; /* Permite quebra de linha para o código */
-            word-break: break-all;
-        }
-        .copy-button {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 0.8em;
-        }
-        .copy-button:hover {
-            background-color: #0056b3;
-        }
-        .copy-button:active {
-            background-color: #004085;
         }
         code {
             font-family: "Courier New", Courier, monospace;
@@ -80,9 +100,11 @@
 
         <h2>Como Instalar</h2>
         <p>Para instalar o PrescreveAI em seu sistema e tê-lo disponível globalmente, abra seu terminal e execute o seguinte comando:</p>
-        <div class="install-code-container">
-            <code id="installCommand">curl -fsSL https://andremillet.github.io/prescreveai/install.sh | bash</code>
-            <button class="copy-button" onclick="copyToClipboard()">Copiar</button>
+        <div class="copy-container">
+            <input type="text" id="installCommandInput" value="curl -fsSL https://andremillet.github.io/prescreveai/install.sh | bash" readonly>
+            <button id="copyButton" title="Copiar para a área de transferência">
+                <i class="fas fa-copy"></i> Copiar
+            </button>
         </div>
         <p>Este comando irá baixar e executar o script de instalação, que configurará o ambiente necessário e criará o comando <code>prescreveai</code> em seu sistema.</p>
 
@@ -99,16 +121,22 @@
     </div>
 
     <script>
-        function copyToClipboard() {
-            const copyText = document.getElementById("installCommand");
-            const textArea = document.createElement("textarea");
-            textArea.value = copyText.textContent;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            textArea.remove();
-            alert("Comando copiado para a área de transferência!");
-        }
+        document.getElementById('copyButton').addEventListener('click', function() {
+            const text = document.getElementById('installCommandInput').value;
+            
+            navigator.clipboard.writeText(text).then(function() {
+                // Opcional: Mude o texto do botão temporariamente para confirmar
+                const button = document.getElementById('copyButton');
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                setTimeout(function() {
+                    button.innerHTML = originalText;
+                }, 2000); // Volta ao original após 2 segundos
+            }).catch(function(err) {
+                console.error('Erro ao copiar: ', err);
+                alert('Falha ao copiar o texto.');
+            });
+        });
     </script>
 </body>
 </html>
