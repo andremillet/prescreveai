@@ -1,0 +1,21 @@
+# Ignorar ambiente virtual
+.venv/
+
+# Ignorar arquivos de cache e temporários
+__pycache__/
+*.pyc
+*.log
+
+# Ignorar PDFs gerados
+*.pdf
+
+# Ignorar arquivos de IDEs (se aplicável)
+.idea/
+.vscode/
+
+# Ignorar arquivos de sistema
+.DS_Store
+thumbs.db
+
+# Ignorar arquivos de PID
+*.pid
