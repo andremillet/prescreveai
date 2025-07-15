@@ -19,3 +19,9 @@ thumbs.db
 
 # Ignorar arquivos de PID
 *.pid
+# Arquivos de dependência e distribuição
+packages/
+*.tar.gz
+
+# Arquivos de processo
+server.pid
