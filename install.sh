@@ -1,86 +1,63 @@
 #!/bin/bash
 
+# Script para baixar e instalar o pacote PrescreveAI
+
+set -e # Encerra o script se qualquer comando falhar
+
 # --- Configurações ---
-# Diretório de instalação dentro da home do usuário, sem necessidade de sudo.
-INSTALL_BASE_DIR="$HOME/.local/share"
-INSTALL_DIR="$INSTALL_BASE_DIR/prescreveai"
-# Diretório para binários do usuário, geralmente já está no PATH.
-BIN_DIR="$HOME/.local/bin"
+# URL do pacote .tar.gz hospedado no GitHub Releases
+PACKAGE_URL="https://github.com/user-attachments/files/21224012/prescreveai.tar.gz"
+
+# Nome do arquivo do pacote
+PACKAGE_FILE="prescreveai.tar.gz"
+
+# Diretório temporário para o download
+TMP_DIR=$(mktemp -d -t prescreveai-install-XXXXXX)
 
 # Cores para mensagens
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}Iniciando a instalação do PrescreveAI...${NC}"
+# Função para limpar o diretório temporário na saída
+cleanup() {
+    echo "Limpando arquivos temporários..."
+    rm -rf "$TMP_DIR"
+}
+trap cleanup EXIT
 
-# --- Pré-instalação ---
-# Garante que os diretórios de destino existam.
-mkdir -p "$INSTALL_BASE_DIR"
-mkdir -p "$BIN_DIR"
+# --- Início da Execução ---
+echo -e "${GREEN}Baixando o pacote de instalação do PrescreveAI...${NC}"
 
-# Verifica se o diretório de instalação já existe e o remove para uma instalação limpa.
-if [ -d "$INSTALL_DIR" ]; then
-    echo "Diretório de instalação existente encontrado. Removendo para uma instalação limpa..."
-    rm -rf "$INSTALL_DIR"
-fi
+# Navega para o diretório temporário
+cd "$TMP_DIR"
 
-# --- Instalação ---
-# Copia os arquivos da aplicação para o diretório de instalação.
-# O script espera ser executado de dentro do diretório do projeto descompactado.
-echo "Copiando arquivos da aplicação..."
-# Cria o diretório de destino e copia o conteúdo do diretório atual para ele.
-mkdir -p "$INSTALL_DIR"
-cp -r ./* "$INSTALL_DIR/"
-
-
-# Entra no diretório de instalação para continuar o processo.
-cd "$INSTALL_DIR"
-
-# --- Ambiente Virtual ---
-echo -e "${GREEN}Configurando o ambiente virtual Python...${NC}"
-python3 -m venv .venv
+# Baixa o pacote (-L para seguir redirecionamentos)
+curl -fsSL -o "$PACKAGE_FILE" "$PACKAGE_URL"
 if [ $? -ne 0 ]; then
-    echo -e "${RED}Erro ao criar o ambiente virtual. Verifique se 'python3' e 'python3-venv' estão instalados.${NC}"
+    echo -e "${RED}Falha ao baixar o pacote de: $PACKAGE_URL${NC}"
     exit 1
 fi
 
-# Ativa o ambiente virtual para os próximos comandos.
-source .venv/bin/activate
+echo -e "${GREEN}Pacote baixado. Extraindo...${NC}"
 
-# --- Dependências ---
-echo -e "${GREEN}Instalando dependências a partir da pasta 'packages'...${NC}"
-# Instala os pacotes da pasta 'packages' sem precisar de conexão com a internet.
-pip install --no-index --find-links=packages -r requirements.txt
+# Extrai o pacote
+tar -xzf "$PACKAGE_FILE"
 if [ $? -ne 0 ]; then
-    echo -e "${RED}Erro ao instalar as dependências. Verifique a pasta 'packages' e o 'requirements.txt'.${NC}"
+    echo -e "${RED}Falha ao extrair o pacote.${NC}"
     exit 1
 fi
 
-# --- Wrapper e Link Simbólico ---
-echo -e "${GREEN}Configurando o comando 'prescreveai'...${NC}"
-# Torna o script wrapper executável.
-chmod +x prescreveai_wrapper.sh
+# Executa o script de instalação local
+echo -e "${GREEN}Iniciando o script de instalação local...${NC}"
 
-# Cria um link simbólico no diretório de binários do usuário.
-ln -sf "$INSTALL_DIR/prescreveai_wrapper.sh" "$BIN_DIR/prescreveai"
-if [ $? -ne 0 ]; then
-    echo -e "${RED}Erro ao criar o link simbólico em $BIN_DIR.${NC}"
+if [ -f "./install.sh" ]; then
+    chmod +x ./install.sh
+    ./install.sh
+else
+    echo -e "${RED}Script de instalação 'install.sh' não encontrado no pacote.${NC}"
     exit 1
 fi
 
-# --- Pós-instalação ---
-# Verifica se o diretório de binários do usuário está no PATH.
-if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
-    echo -e "\n${RED}AVISO:${NC} O diretório $BIN_DIR não parece estar no seu PATH."
-    echo "Para usar o comando 'prescreveai' de qualquer lugar, adicione a seguinte linha ao seu"
-    echo "arquivo de configuração de shell (como ~/.bashrc, ~/.zshrc, ou ~/.profile):"
-    echo -e "\n  export PATH=\"$BIN_DIR:\$PATH\"\n"
-    echo "Depois, reinicie seu terminal ou execute 'source ~/.bashrc' (ou o arquivo equivalente)."
-fi
+echo -e "${GREEN}Processo de instalação concluído.${NC}"
 
-echo -e "\n${GREEN}Instalação do PrescreveAI concluída com sucesso!${NC}"
-echo "Você pode agora usar o comando 'prescreveai'."
-echo "Experimente:"
-echo "  prescreveai"
-echo "  prescreveai serve"
