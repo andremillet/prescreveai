@@ -20,18 +20,19 @@ Sua contribuição e feedback são muito bem-vindos!
 
 ## Como Instalar
 
-Para instalar o PrescreveAI em seu sistema e tê-lo disponível globalmente, abra seu terminal e execute o seguinte comando:
+Para instalar o PrescreveAI em seu sistema, abra seu terminal e execute o seguinte comando:
 
 ```bash
 curl -fsSL https://andremillet.github.io/prescreveai/install.sh | bash
 ```
 
-Este comando irá:
+Este comando irá baixar e executar um script que automatiza todo o processo:
 
-1.  Clonar o repositório do PrescreveAI para `/opt/prescreveai`.
-2.  Configurar um ambiente virtual Python (`.venv`).
-3.  Instalar todas as dependências necessárias.
-4.  Criar um link simbólico para o comando `prescreveai` em `/usr/local/bin`, tornando-o acessível de qualquer lugar no seu terminal.
+1.  **Baixa o pacote da versão mais recente** a partir dos Releases do GitHub.
+2.  **Descompacta** os arquivos em um diretório local (`$HOME/.local/share/prescreveai`).
+3.  Configura um **ambiente virtual Python** (`.venv`) isolado para não interferir com outros programas.
+4.  **Instala todas as dependências** a partir do pacote, sem precisar de conexão com a internet durante a instalação.
+5.  Cria um **link simbólico** para o comando `prescreveai` em `$HOME/.local/bin`, tornando-o acessível de qualquer lugar no seu terminal (sem a necessidade de `sudo`).
 
 ## Como Usar
 
@@ -72,11 +73,11 @@ O servidor será iniciado em segundo plano na porta `8000` (por padrão). Você 
 
 *   **Verificar Status:**
     ```bash
-prescreveai status
+    prescreveai status
     ```
 *   **Parar Servidor:**
     ```bash
-prescreveai stop
+    prescreveai stop
     ```
 
 ### 3. Atualização do Programa
@@ -87,7 +88,7 @@ Para atualizar o PrescreveAI para a versão mais recente, execute:
 prescreveai update
 ```
 
-Este comando fará um `git pull` no diretório de instalação e reinstalará as dependências.
+Este comando executará o processo de instalação novamente, garantindo que você tenha a última versão disponível.
 
 ## Contribuição
 
